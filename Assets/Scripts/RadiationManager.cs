@@ -7,12 +7,18 @@ public class RadiationManager : MonoBehaviour
     private static RadiationManager _instance;
     private GameObject _player;
     private GameObject _currentClosestRadSource;
+
+    [Range(1, 5)] public float _radCalcTiming;
+
     private float _currentRads { get; set; } = 0.0f;
     [field : SerializeField, Range(1000, 100000)] private float _maxRads { get; set; }
+    [field : SerializeField, Range(5, 25)] private float _maxRadSourceDist { get; set; }
     [field: SerializeField, Range(2, 25)] private float _baseRadsIncrease { get; set; }
     [field : SerializeField, Range(1, 10)] private float _RadsIncreaseScalingFactor { get; set; }
 
     private List<GameObject> _radSources = new List<GameObject>();
+
+    WaitForSeconds wait;
 
 
 
@@ -32,6 +38,7 @@ public class RadiationManager : MonoBehaviour
     private void Awake()
     {
         _instance = this;
+        wait = new WaitForSeconds(_radCalcTiming);
     }
 
 
@@ -47,7 +54,7 @@ public class RadiationManager : MonoBehaviour
             Debug.Log($"RadiationManager :: AddRadSources Check: {rs.name}");
         }
 
-
+        StartCoroutine("RadCalcCoroutine", CheckDistance(_player, _radSources));
     }
 
     private GameObject CheckDistance(GameObject _player, List<GameObject> _radSources)
@@ -70,5 +77,22 @@ public class RadiationManager : MonoBehaviour
         return ret;
     }
     
+    private IEnumerator RadCalcCoroutine(GameObject _closestRadSource)
+    {
+        while(true)
+        {
+            float dist = Vector3.Distance(_closestRadSource.transform.position, _player.transform.position);
+            if (dist <= _maxRadSourceDist)
+            {
+                _currentRads += (_baseRadsIncrease / dist) * _RadsIncreaseScalingFactor;
+            }
+            else
+            {
+                _currentRads += _baseRadsIncrease;
+            }
+            Debug.Log($"RadiationManager :: _currentRads: {_currentRads}");
+            yield return wait;
+        }
+    }
 
 }

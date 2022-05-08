@@ -17705,7 +17705,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c470009c6312fb44d99b9a9e9134e887, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _radCalcTiming: 1
   <_maxRads>k__BackingField: 100000
+  <_maxRadSourceDist>k__BackingField: 10
   <_baseRadsIncrease>k__BackingField: 2
   <_RadsIncreaseScalingFactor>k__BackingField: 1
 --- !u!4 &793015266
