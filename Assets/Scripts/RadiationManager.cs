@@ -6,19 +6,20 @@ public class RadiationManager : MonoBehaviour
 {
     private static RadiationManager _instance;
     private GameObject _player;
-    private GameObject _currentClosestRadSource;
 
-    [Range(1, 5)] public float _radCalcTiming;
+    // DEBUG
+    public TMPro.TextMeshProUGUI _radText;
+    WaitForSeconds _radUpdateTimer;
 
-    private float _currentRads { get; set; } = 0.0f;
-    [field : SerializeField, Range(1000, 100000)] private float _maxRads { get; set; }
-    [field : SerializeField, Range(5, 25)] private float _maxRadSourceDist { get; set; }
-    [field: SerializeField, Range(2, 25)] private float _baseRadsIncrease { get; set; }
-    [field : SerializeField, Range(1, 10)] private float _RadsIncreaseScalingFactor { get; set; }
+    private float _CurrentRads { get; set; } = 0.0f;
+    private float _CurrentRadsIncrease { get; set; } = 0.0f;
+    [field : SerializeField, Range(1000, 100000)] private float _MaxRads { get; set; }
+    [field : SerializeField, Range(5, 25)] private float _MaxRadSourceDist { get; set; }
+    [field: SerializeField, Range(2, 25)] private float _BaseRadsIncrease { get; set; }
+    [field : SerializeField, Range(25, 100)] private float _MaxRadsIncrease { get; set; }
+    [field: SerializeField, Range(0.1f, 5)] private float _RadUpdateTime { get; set; }
 
     private List<GameObject> _radSources = new List<GameObject>();
-
-    WaitForSeconds wait;
 
 
 
@@ -38,24 +39,8 @@ public class RadiationManager : MonoBehaviour
     private void Awake()
     {
         _instance = this;
-        wait = new WaitForSeconds(_radCalcTiming);
     }
 
-
-    private void Start()
-    {
-        // Get a reference to the player ready for distance checks
-        _player = GameObject.FindGameObjectWithTag("Player");
-
-        // Find and add the radiation sources we will be checking the distance from the player on
-        _radSources.AddRange(GameObject.FindGameObjectsWithTag("RadSource"));
-        foreach(GameObject rs in _radSources)
-        {
-            Debug.Log($"RadiationManager :: AddRadSources Check: {rs.name}");
-        }
-
-        StartCoroutine("RadCalcCoroutine", CheckDistance(_player, _radSources));
-    }
 
     private GameObject CheckDistance(GameObject _player, List<GameObject> _radSources)
     {
@@ -64,7 +49,7 @@ public class RadiationManager : MonoBehaviour
         // Set this to a arbitrarily high value, as we want to get the radSource if it is closer
         float distMax = 1000;
 
-        foreach(GameObject gm in _radSources)
+        foreach (GameObject gm in _radSources)
         {
             float dist = Vector3.Distance(gm.transform.position, _player.transform.position);
             if (dist < distMax)
@@ -76,23 +61,44 @@ public class RadiationManager : MonoBehaviour
 
         return ret;
     }
-    
-    private IEnumerator RadCalcCoroutine(GameObject _closestRadSource)
+
+    private IEnumerator RadCalc()
     {
         while(true)
         {
+            GameObject _closestRadSource = CheckDistance(_player, _radSources);
             float dist = Vector3.Distance(_closestRadSource.transform.position, _player.transform.position);
-            if (dist <= _maxRadSourceDist)
+            if (dist <= _MaxRadSourceDist)
             {
-                _currentRads += (_baseRadsIncrease / dist) * _RadsIncreaseScalingFactor;
+                _CurrentRadsIncrease = _MaxRadsIncrease / dist;
             }
             else
             {
-                _currentRads += _baseRadsIncrease;
+                _CurrentRadsIncrease = _BaseRadsIncrease;
             }
-            Debug.Log($"RadiationManager :: _currentRads: {_currentRads}");
-            yield return wait;
+
+            yield return _radUpdateTimer;
+
+            _CurrentRads += _CurrentRadsIncrease;
+            _radText.text = "Current Rads: " + _CurrentRads.ToString("F2") + "(+" + _CurrentRadsIncrease.ToString("F2") + ")";
         }
+
     }
+
+
+
+    private void Start()
+    {
+        // Get a reference to the player ready for distance checks
+        _player = GameObject.FindGameObjectWithTag("Player");
+
+        // Find and add the radiation sources we will be checking the distance from the player on
+        _radSources.AddRange(GameObject.FindGameObjectsWithTag("RadSource"));
+
+        _radUpdateTimer = new WaitForSeconds(_RadUpdateTime);
+
+        StartCoroutine(RadCalc());
+    }
+
 
 }

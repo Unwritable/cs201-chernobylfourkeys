@@ -17705,11 +17705,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c470009c6312fb44d99b9a9e9134e887, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _radCalcTiming: 1
-  <_maxRads>k__BackingField: 100000
-  <_maxRadSourceDist>k__BackingField: 10
-  <_baseRadsIncrease>k__BackingField: 2
-  <_RadsIncreaseScalingFactor>k__BackingField: 1
+  _radText: {fileID: 1498353507}
+  <_MaxRads>k__BackingField: 100000
+  <_MaxRadSourceDist>k__BackingField: 15
+  <_BaseRadsIncrease>k__BackingField: 5
+  <_MaxRadsIncrease>k__BackingField: 100
+  <_RadsScalingFactor>k__BackingField: 5
+  <_RadUpdateTime>k__BackingField: 0.5
 --- !u!4 &793015266
 Transform:
   m_ObjectHideFlags: 0
@@ -21486,7 +21488,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1498353506
 RectTransform:
   m_ObjectHideFlags: 0
@@ -26661,7 +26663,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh24970
+  m_Name: pb_Mesh25266
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
