@@ -12,17 +12,19 @@ public class DoorEvent : MonoBehaviour
     private Vector3 _openPosition = new Vector3(0, -90, 0);
     private Vector3 _closePosition = new Vector3(0, 0, 0);
 
+    [SerializeField, Range(0.1f, 100f)] protected float _tweenSpeed;
+
     public void OpenDoor()
     {
         if(!isOpen)
         {
             var sequence = DOTween.Sequence();
-            sequence.Append(this.transform.DOLocalRotate(_openPosition, 3f, RotateMode.Fast));
+            sequence.Append(this.transform.DOLocalRotate(_openPosition, _tweenSpeed, RotateMode.Fast));
             isOpen = true;
         } else
         {
             var sequence = DOTween.Sequence();
-            sequence.Append(this.transform.DOLocalRotate(_closePosition, 3f, RotateMode.Fast));
+            sequence.Append(this.transform.DOLocalRotate(_closePosition, _tweenSpeed, RotateMode.Fast));
             isOpen= false;
         }
 
