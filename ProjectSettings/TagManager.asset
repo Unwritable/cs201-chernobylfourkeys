@@ -6,6 +6,7 @@ TagManager:
   tags:
   - RadSource
   - LevelKey
+  - InteractText
   layers:
   - Default
   - TransparentFX

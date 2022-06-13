@@ -9,14 +9,8 @@ using UnityEngine.Events;
 public class InteractWithObject : MonoBehaviour
 {
     public bool withinRange;
-    [SerializeField] TMPro.TextMeshProUGUI _interactText;
     public KeyCode interactKey;
     public UnityEvent interactAction;
-
-    void Start()
-    {
-        
-    }
 
 
     void Update()
@@ -26,26 +20,28 @@ public class InteractWithObject : MonoBehaviour
             if(Input.GetKeyDown(interactKey))
             {
                 interactAction.Invoke();
-                _interactText.gameObject.SetActive(false);
+                UIManager.Instance.EnableDisableInteractText(false);
             }
         }
     }
 
     private void OnTriggerEnter(Collider col)
     {
+        Debug.Log("InteractWithObject :: Trigger entered.");
         if(col.gameObject.CompareTag("Player"))
         {
             withinRange = true;
-            _interactText.gameObject.SetActive(true);
+            UIManager.Instance.EnableDisableInteractText(withinRange);
         }
     }
 
     private void OnTriggerExit(Collider col)
     {
+        Debug.Log("InteractWithObject :: Trigger exited.");
         if (col.gameObject.CompareTag("Player"))
         {
             withinRange = false;
-            _interactText.gameObject.SetActive(false);
+            UIManager.Instance.EnableDisableInteractText(withinRange);
         }
     }
 }

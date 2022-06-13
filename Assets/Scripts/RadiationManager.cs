@@ -6,15 +6,16 @@ public class RadiationManager : MonoBehaviour
 {
     private static RadiationManager _instance;
     private GameObject _player;
+    private GameObject _closestRadSource;
+    private RadData _data;
 
-    // DEBUG
     public TMPro.TextMeshProUGUI _radText;
     WaitForSeconds _radUpdateTimer;
 
     private float _CurrentRads { get; set; } = 0.0f;
     private float _CurrentRadsIncrease { get; set; } = 0.0f;
     [field : SerializeField, Range(1000, 100000)] private float _MaxRads { get; set; }
-    [field : SerializeField, Range(5, 25)] private float _MaxRadSourceDist { get; set; }
+    //[field : SerializeField, Range(5, 25)] private float _MaxRadSourceDist { get; set; } :: THIS IS NOW SET PER RADIATION SOURCE
     [field: SerializeField, Range(2, 25)] private float _BaseRadsIncrease { get; set; }
     [field : SerializeField, Range(25, 100)] private float _MaxRadsIncrease { get; set; }
     [field: SerializeField, Range(0.1f, 5)] private float _RadUpdateTime { get; set; }
@@ -28,10 +29,8 @@ public class RadiationManager : MonoBehaviour
         get
         {
             if (_instance == null)
-            {
-                // Might be better as a Debug.Log that just returns the current _instance
                 Debug.Log("RadiationManager :: Error: _instance is NULL.");
-            }
+
             return _instance;
         }
     }
@@ -39,6 +38,7 @@ public class RadiationManager : MonoBehaviour
     private void Awake()
     {
         _instance = this;
+        Debug.Log("RadiationManager :: _instance awake.");
     }
 
 
@@ -66,9 +66,11 @@ public class RadiationManager : MonoBehaviour
     {
         while(true)
         {
-            GameObject _closestRadSource = CheckDistance(_player, _radSources);
+            _closestRadSource = CheckDistance(_player, _radSources);
+            _data = _closestRadSource.GetComponent<RadData>();
+
             float dist = Vector3.Distance(_closestRadSource.transform.position, _player.transform.position);
-            if (dist <= _MaxRadSourceDist)
+            if (dist <= _data.RadDist)
             {
                 _CurrentRadsIncrease = _MaxRadsIncrease / dist;
             }
@@ -80,7 +82,8 @@ public class RadiationManager : MonoBehaviour
             yield return _radUpdateTimer;
 
             _CurrentRads += _CurrentRadsIncrease;
-            _radText.text = "Current Rads: " + _CurrentRads.ToString("F2") + "(+" + _CurrentRadsIncrease.ToString("F2") + ")";
+            string changeToText = "Current Rads: " + _CurrentRads.ToString("F2") + "(+" + _CurrentRadsIncrease.ToString("F2") + ")";
+            UIManager.Instance.SetRadText(changeToText);
         }
 
     }

@@ -8,13 +8,18 @@ using DG.Tweening;
 
 public class TreeEvent : MonoBehaviour
 {
-    private Vector3 _fallenRot = new Vector3(-90f, 0f, 0f);
     [SerializeField, Range(0.1f, 100f)] protected float _tweenSpeed;
+    [SerializeField, Range(0.1f, 100f)] protected float _deathTime;
 
     public void FellTree()
     {
         var sequence = DOTween.Sequence();
-        sequence.Append(this.transform.DOLocalRotate(_fallenRot, _tweenSpeed, RotateMode.Fast));
+        sequence.Append(this.transform.DOLocalMoveY(this.transform.position.y - 2f, _tweenSpeed));
+        sequence.Append(this.transform.DOLocalMoveY(this.transform.position.y - 10f, 0f).OnComplete(DestroyOnComplete));
+    }
 
+    public void DestroyOnComplete()
+    {
+        Destroy(this.gameObject, _deathTime);
     }
 }
